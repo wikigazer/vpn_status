@@ -11,8 +11,9 @@
 #		+ connectivity to well known external IP
 #		+ network route to well known web site
 
-# updated	Tue  5 Apr 17:18:40 BST 2022
+# updated	Fri  8 Apr 00:47:54 BST 2022
 
+# 2022_04_08	tidy output layout
 # 2022_04_05	first draft
 
 #usage		vpn_status [alternative-network-interface-name]
@@ -53,12 +54,14 @@ else
 	exit 1
 fi
 
+echo
 echo "Checking default gateway address"
 
 echo "netstat -rn | grep ^0.0.0.0 | head -1 | awk '{print $2}'"
 gw=$(netstat -rn | grep ^0.0.0.0 | head -1 | awk '{print $2}')
 echo ${gw}
 
+echo
 echo "Checking network connectivity to default gateway: ${gw}"
 
 echo "ping -c2 ${gw}"
@@ -71,12 +74,13 @@ else
 	echo "connection to default gateway ${gw} is down"
 fi
 
+echo
 echo "Checking for nameserver IP address"
 
 echo "grep nameserver /etc/resolv.conf"
 grep nameserver /etc/resolv.conf
 
-
+echo
 echo "Checking network connectivity to nameserver(s)"
 for ns in $(grep nameserver /etc/resolv.conf | sed -e "s/.* //" ); do
         echo
@@ -90,12 +94,14 @@ for ns in $(grep nameserver /etc/resolv.conf | sed -e "s/.* //" ); do
         fi
 done
 
+echo
 echo "Checking external IP address"
 
-echo "dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'\"' '{ print $2}' "
+echo "dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F\\\" '{ print \$2}' "
 eip=$(dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}') 
 echo ${eip}
 
+echo
 echo "Checking network connectivity to well known external IP address"
 
 echo "ping -c2 8.8.8.8"
@@ -107,6 +113,7 @@ else
         echo "connection to external IP address 8.8.8.8 is down"
 fi
 
+echo
 echo "Checking network route to well know external website"
 
 echo "/bin/sudo tcptraceroute google.com"
